@@ -1,4 +1,4 @@
-# Example SQLServer plugin for MLflow
+# Example SQL Server plugin for MLflow
 
 This repository provides an example for converting the SQLServer integration PR submitted to the main MLflow repository by @avflor (https://github.com/mlflow/mlflow/pull/1734) into an MLflow plugin.
 
