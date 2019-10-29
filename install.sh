@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 
+if ! [ -x "$(command -v pip)" ];
+then
+    PIPCMD=pip3
+else
+    PIPCMD=pip
+fi
+
+echo Installing required packages using: `which $PIPCMD`.
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Install the 'sqplugin' library
 cd $DIR
-pip3 install -e .
+$PIPCMD install -e .
 
 # Install the 'mlflow[sqlserver]' library (MLflow + SQLserver support)
 cd $DIR/mlflow
-pip3 install -e .[sqlserver]
+$PIPCMD install -e .[sqlserver]
 
