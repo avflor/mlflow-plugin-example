@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if ! [ -x "$(command -v pip)" ];
+if [ -x "$(command -v pip3)" ];
 then
     PIPCMD=pip3
 else
