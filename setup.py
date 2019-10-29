@@ -10,4 +10,10 @@ setup(
   install_requires=[
       'mlflow',
   ],
+  entry_points={
+      "mlflow.artifact_repository": [
+        "mssql=sqlplugin.store:DBArtifactRepository",
+        "sqlite=sqlplugin.store:DBArtifactRepository",
+      ]
+  },
 )

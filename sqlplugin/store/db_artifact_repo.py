@@ -91,6 +91,9 @@ class DBArtifactRepository(ArtifactRepository):
         SessionMaker = sqlalchemy.orm.sessionmaker(bind=self.engine)
         self.ManagedSessionMaker = self._get_managed_session_maker(SessionMaker)
 
+        # Indicate to MLflow that this is an artifact repository plugin
+        self.is_plugin = True
+
     @staticmethod
     def _initialize_tables(engine):
         _logger.info("Creating initial MLflow database tables...")
