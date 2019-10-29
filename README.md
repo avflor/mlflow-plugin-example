@@ -12,7 +12,7 @@ $ git submodule update --init
 
 2. Invoke the `install.sh` script from the repository's root directory. This script uses `pip` to install the `sqlplugin` library (which provides a custom artifact repository implementation) as well as a custom version of the MLflow library that attempts to import `sqlplugin` if it is available.
 
-Once the plugin has been installed, along with the custom version of MLflow, run the artifact logging test Python script located at `tests/log_artifacts.py`. If this Python script creates an `mlruns` directory and a SQLite database called `testartifactdb` without emitting errors, the plugin is working as expected.
+Once the plugin has been installed along with the custom version of MLflow, run the artifact logging test Python script located at `tests/log_artifacts.py`. If this Python script creates an `mlruns` directory and a SQLite database called `testartifactdb` without emitting errors, the plugin is working as expected.
 
 ## Implementation overview
 This repository contains two main Python packages:
