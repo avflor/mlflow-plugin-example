@@ -3,17 +3,17 @@ from distutils.core import setup
 setup(
   name='sqlplugin',
   version='1.0',
-  description='SQL plugin example for MLflow',
-  author='Corey Zumar',
-  author_email='corey.zumar@databricks.com',
+  description='Plugin that provides DB Artifact Store functionality for MLflow',
+  author='Avrilia Floratou',
+  author_email='avrilia.floratou@@microsoft.com',
   packages=['sqlplugin'],
   install_requires=[
       'mlflow',
   ],
   entry_points={
       "mlflow.artifact_repository": [
-        "mssql=sqlplugin.store:DBArtifactRepository",
-        "sqlite=sqlplugin.store:DBArtifactRepository",
+        "mssql=sqlplugin.store.artifact:DBArtifactRepository",
+        "sqlite=sqlplugin.store.artifact:DBArtifactRepository",
       ]
   },
 )
