@@ -65,4 +65,3 @@ class SqlArtifact(Base):
                                                            self.group_path,
                                                            self.artifact_content,
                                                            self.artifact_initial_size)
-

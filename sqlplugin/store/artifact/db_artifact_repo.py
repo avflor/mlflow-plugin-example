@@ -4,16 +4,17 @@ from abc import ABCMeta
 import sqlalchemy
 import tempfile
 
+from sqlplugin.store.db.initial_artifact_store_models import Base as InitialBase
+from sqlplugin.store.db.initial_artifact_store_models import SqlArtifact
+
 from mlflow.protos.databricks_pb2 import INVALID_PARAMETER_VALUE, RESOURCE_DOES_NOT_EXIST
 
 from contextlib import contextmanager
 
 from mlflow.utils.uri import extract_db_type_from_uri
-from mlflow.store.artifact.artifact_repo import ArtifactRepository
+from mlflow.store.artifact.artifact_repo import ArtifactRepository, ArtifactRepositoryType
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 from mlflow.exceptions import MlflowException
-from sqlplugin.store.db.initial_artifact_store_models import Base as InitialBase
-from sqlplugin.store.db.initial_artifact_store_models import SqlArtifact
 from mlflow.protos.databricks_pb2 import INTERNAL_ERROR
 from sqlalchemy import or_
 from six.moves import urllib
@@ -80,7 +81,7 @@ class DBArtifactRepository(ArtifactRepository):
         self.db_uri, self.root = extract_db_uri_and_root_path(artifact_uri)
         self.db_type = extract_db_type_from_uri(self.db_uri)
         self.engine = sqlalchemy.create_engine(self.db_uri)
-        super(DBArtifactRepository, self).__init__(self.db_uri)
+        super(DBArtifactRepository, self).__init__(self.db_uri, ArtifactRepositoryType.DB)
 
         insp = sqlalchemy.inspect(self.engine)
         self.expected_tables = set([
