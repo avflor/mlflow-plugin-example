@@ -12,8 +12,8 @@ from mlflow.utils.uri import extract_db_type_from_uri
 from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 from mlflow.exceptions import MlflowException
-from mlflow.store.db.initial_artifact_store_models import Base as InitialBase
-from mlflow.store.db.initial_artifact_store_models import SqlArtifact
+from sqlplugin.store.db.initial_artifact_store_models import Base as InitialBase
+from sqlplugin.store.db.initial_artifact_store_models import SqlArtifact
 from mlflow.protos.databricks_pb2 import INTERNAL_ERROR
 from sqlalchemy import or_
 from six.moves import urllib

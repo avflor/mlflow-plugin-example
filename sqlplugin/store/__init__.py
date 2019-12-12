@@ -1,1 +1,1 @@
-from sqlplugin.store.db_artifact_repo import DBArtifactRepository
+from sqlplugin.store.artifact.db_artifact_repo import DBArtifactRepository

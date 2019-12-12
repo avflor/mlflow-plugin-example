@@ -17,5 +17,5 @@ $PIPCMD install -e .
 
 # Install the 'mlflow[sqlserver]' library (MLflow + SQLserver support)
 cd $DIR/mlflow
-$PIPCMD install -e .[sqlserver]
+$PIPCMD install -e .[dbArtifactStore]
 
