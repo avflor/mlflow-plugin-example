@@ -3,6 +3,7 @@ import os
 from abc import ABCMeta
 import sqlalchemy
 import tempfile
+import posixpath
 
 from sqlplugin.store.db.initial_artifact_store_models import Base as InitialBase
 from sqlplugin.store.db.initial_artifact_store_models import SqlArtifact
@@ -12,14 +13,12 @@ from mlflow.protos.databricks_pb2 import INVALID_PARAMETER_VALUE, RESOURCE_DOES_
 from contextlib import contextmanager
 
 from mlflow.utils.uri import extract_db_type_from_uri
-from mlflow.store.artifact.artifact_repo import ArtifactRepository, ArtifactRepositoryType
+from mlflow.store.artifact.artifact_repo import ArtifactRepository
 from mlflow.utils.file_utils import relative_path_to_artifact_path
 from mlflow.exceptions import MlflowException
 from mlflow.protos.databricks_pb2 import INTERNAL_ERROR
 from sqlalchemy import or_
 from six.moves import urllib
-
-ROOT_PATH_BASE = "artifacts"
 
 _INVALID_DB_URI_MSG = "Please refer to https://mlflow.org/docs/latest/tracking.html for " \
                       "format specifications."
@@ -38,8 +37,8 @@ def _relative_path_local(base_dir, subdir_path):
 
 
 # Extracts the db_uri and root_path from the repo_uri.
-# The repo_uri is of the form DB_URI/runID/ROOT_PATH_BASE where DB_URI:
-# <dialect>+<driver>://<username>:<password>@<host>:<port>/<database>?<query>.
+# The repo_uri is of the form:
+# <dialect>+<driver>://<username>:<password>@<host>:<port>/<database>/runID/"artifacts"/<query>.
 def extract_db_uri_and_root_path(repo_uri):
     parsed_uri = urllib.parse.urlparse(repo_uri)
     scheme = parsed_uri.scheme
@@ -48,26 +47,17 @@ def extract_db_uri_and_root_path(repo_uri):
         error_msg = "Invalid database scheme in the URI: '%s'. %s" % (scheme, _INVALID_DB_URI_MSG)
         raise MlflowException(error_msg, INVALID_PARAMETER_VALUE)
 
-    if parsed_uri.query == "":
-        if parsed_uri.path == "":
-            return repo_uri, ""
-        else:
-            parsed_path = parsed_uri.path.split(ROOT_PATH_BASE, 1)
-            if len(parsed_path) == 2:
-                db_uri = os.path.dirname(os.path.dirname(repo_uri))
-                path = os.path.normpath(repo_uri.split(db_uri)[1])
-                path = path.split(os.sep, 1)[1]
-                return db_uri, path
-            else:
-                return repo_uri, ""
-    else:
-        parsed_query = parsed_uri.query.split("/", 1)
-        if len(parsed_query) == 2:
-            path = os.path.normpath(parsed_query[1])
-            parsed_uri = parsed_uri._replace(query=parsed_query[0])
-        else:
-            path = ""
-        return urllib.parse.urlunparse(parsed_uri), path
+    def get_dbname_and_path(uri_path):
+        head, tail = posixpath.split(uri_path)
+        if len(head) == 0 or head == posixpath.sep:
+            return tail, posixpath.sep
+
+        dbname, path = get_dbname_and_path(head)
+        return dbname, posixpath.join(path, tail)
+
+    dbname, artifact_path = get_dbname_and_path(parsed_uri.path)
+    parsed_root_uri = parsed_uri._replace(path=dbname)
+    return urllib.parse.urlunparse(parsed_root_uri), artifact_path
 
 
 class DBArtifactRepository(ArtifactRepository):
@@ -81,7 +71,7 @@ class DBArtifactRepository(ArtifactRepository):
         self.db_uri, self.root = extract_db_uri_and_root_path(artifact_uri)
         self.db_type = extract_db_type_from_uri(self.db_uri)
         self.engine = sqlalchemy.create_engine(self.db_uri)
-        super(DBArtifactRepository, self).__init__(self.db_uri, ArtifactRepositoryType.DB)
+        super(DBArtifactRepository, self).__init__(self.db_uri)
 
         insp = sqlalchemy.inspect(self.engine)
         self.expected_tables = set([

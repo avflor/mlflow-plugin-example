@@ -1,4 +1,4 @@
 [submodule "mlflow"]
 	path = mlflow
-	url = https://github.com/avflor/mlflow
-	branch = apisForDBArtifactStorePlugin
+	url = https://github.com/dbczumar/mlflow
+	branch = uri_construction_followup
