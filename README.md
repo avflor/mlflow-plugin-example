@@ -22,7 +22,7 @@ This repository contains two main Python packages:
 ```
 entry_points={
     "mlflow.artifact_repository": [
-      "mssql=sqlplugin.store:DBArtifactRepository",
+      "mssql=sqlplugin.store:DBArtifactRepository"
     ]
 },
 ```
